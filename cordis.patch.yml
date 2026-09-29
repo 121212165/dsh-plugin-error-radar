@@ -1,0 +1,8 @@
+# Mounts error-radar into a dsh profile. Reads tool-trace sidecars.
+- insert:
+    - id: error-radar
+      name: dsh-plugin-error-radar
+      config:
+        enabled: true
+        # dataDir: ~/.dsh/tool-trace
+        errorRateAlert: 20   # alert when a tool's error rate exceeds this %
