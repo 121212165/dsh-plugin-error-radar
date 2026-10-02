@@ -1,6 +1,6 @@
 # dsh-plugin-error-radar
 
-**EN** · Tool reliability radar over dsh-plugin-tool-trace data: per-tool error rate, failure streaks, p95 latency — and deliberate silence below 3 calls so one fluke is never reported as a systemic problem (`/radar`). · 4 `node --test` green · verified against real tool-trace sidecars on this machine, including the corrupt-line `skipped` counter path.
+**EN** · Tool reliability radar over dsh-plugin-tool-trace data: per-tool error rate, failure streaks, p95 latency — and deliberate silence below 3 calls so one fluke is never reported as a systemic problem (`/radar`), plus a one-screen go/no-go verdict over a recent window (`/health --days 3`). · 14 `node --test` green · verified against real tool-trace sidecars on this machine, including the corrupt-line `skipped` counter path.
 
 DeepSeek Harness (dsh) 插件：**工具可靠性雷达**。读 [tool-trace](https://github.com/121212165/dsh-plugin-tool-trace) 的调用边车，按工具算错误率、连续失败次数、p95/最慢耗时，并对"系统性坏掉"和"只是抖动"分别告警。
 
@@ -11,6 +11,9 @@ DeepSeek Harness (dsh) 插件：**工具可靠性雷达**。读 [tool-trace](htt
 ## 用法
 
 - **`/radar`**：按错误率降序输出每个工具的 `调用数 · 错误率 · 连败 · p95 · 最慢`，下方附 `⚠ 告警` 段。
+- **`/health [--days 3]`**：把 tool-trace 的量/时延与雷达的告警**合成一屏判定**——开头一行就是结论：`✓ 没有告警，工具面是干净的，可以开工` / `△ 没有连败，但…` / `❌ 有系统性故障：X 连续失败 N 次——先修这条，再往别的窗口派活`。默认只看**近 3 天**（`--days 1..365` 可放宽），窗口里没有记录就明说"窗口外还有 N 条"，不拿月平均冒充今天的健康。
+
+这是"tool-trace + error-radar 合并成 health 命令组"的落点：**合并的是命令面，不是采集**。采集需要 `tools/pre-execute` + `post-execute` 那对中间件按 callId 配对，两个插件各挂一份会把每次调用记两遍，所以写入权继续留在 dsh-plugin-tool-trace（它的 `/tools-stats` 现在会指向这里）。
 
 ```text
 工具可靠性雷达（按错误率排序）:
@@ -33,6 +36,7 @@ DeepSeek Harness (dsh) 插件：**工具可靠性雷达**。读 [tool-trace](htt
   - `streak`：连败 ≥ 3。
 - **p95** 用最近秩法（`ceil(p/100·n)` 索引，钳到数组内），空样本返回 0；非有限/负数耗时记录被排除在时长统计之外，但仍计入调用数与错误率。
 - 时长口径继承 tool-trace 的 `durationMs`（pre/post-execute 配对计时），包含工具自身排队时间。
+- **`/health` 的"阻塞"只认连败**（`streak` 告警）：连败是"这条路现在走不通"，错误率高但成功穿插其间只是"抖"，不该拦住开工。慢尾按 **p95** 而不是峰值挑最慢的工具。
 
 ## 配置
 
@@ -63,6 +67,6 @@ dsh plugin --profile web add github:121212165/dsh-plugin-error-radar
 自检挂载：`dsh --profile web --dump-config | grep dsh-plugin-error-radar`，应看到该条目。
 ## 验证状态
 
-- 纯函数（错误率、连败串、p95 边界、双类告警的触发与静默、渲染）4 个 `node --test` 全绿。
+- 14 个 `node --test` 全绿：雷达纯函数 4（错误率、连败串、p95 边界、双类告警触发与静默）+ 健康判定纯函数 4（窗口裁剪、总量/最慢/阻塞、一屏渲染的四种结论、窗口标签不许说谎）+ 装配层 6（真临时 `tool-trace-*.jsonl` 上跑 `/health` 与 `/radar`：无数据点名目录、干净窗口、连败判定、`--days` 收窄与放宽、坏参数拒绝、损坏行计数；坏 `errorRateAlert` 启动即失败点名 error-radar）。
 - 本机 live：读真实 tool-trace 边车（含 `quota_check` 等真实记录）出表；`skipped` 计数走真实容错解析路径。
 - 已知局限：样本极少时（<3 次调用）刻意不告警，避免一次抖动就报"系统性问题"。

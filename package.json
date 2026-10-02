@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-error-radar",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "dsh plugin: tool failure radar — error rates, retry clusters and slow tail per tool from the tool-trace sidecars.",
   "type": "module",
   "license": "MIT",
