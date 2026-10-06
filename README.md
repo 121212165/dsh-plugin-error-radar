@@ -1,5 +1,8 @@
 # dsh-plugin-error-radar
 
+> 🧩 **dsh 插件家族**（22 件）：总目录 **[dsh-plugin-family](https://github.com/121212165/dsh-plugin-family)** ｜ 明星插件：**[ide-hub](https://github.com/121212165/dsh-plugin-ide-hub)** 跨 IDE 统一管理 · **[task-forge](https://github.com/121212165/dsh-plugin-task-forge)** 跨窗口无损交接 · **[quota](https://github.com/121212165/dsh-plugin-quota)** 实时用量仪表
+
+
 **EN** · Tool reliability radar over dsh-plugin-tool-trace data: per-tool error rate, failure streaks, p95 latency — and deliberate silence below 3 calls so one fluke is never reported as a systemic problem (`/radar`), plus a one-screen go/no-go verdict over a recent window (`/health --days 3`). · 14 `node --test` green · verified against real tool-trace sidecars on this machine, including the corrupt-line `skipped` counter path.
 
 DeepSeek Harness (dsh) 插件：**工具可靠性雷达**。读 [tool-trace](https://github.com/121212165/dsh-plugin-tool-trace) 的调用边车，按工具算错误率、连续失败次数、p95/最慢耗时，并对"系统性坏掉"和"只是抖动"分别告警。
