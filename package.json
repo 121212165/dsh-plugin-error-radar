@@ -27,6 +27,11 @@
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
+    },
+    "catalog": {
+      "category": "工具与质量",
+      "blurb": "错误率/连败/p95 雷达，区分\"系统性故障\"和\"抖动\"",
+      "entries": "`/radar` `/health`"
     }
   },
   "engines": {
