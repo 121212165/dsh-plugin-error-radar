@@ -13,15 +13,15 @@ export interface Config {
     dataDir?: string;
     errorRateAlert: number;
 }
-export declare const Config: Schema<Schemastery.ObjectS<{
-    enabled: Schema<boolean, boolean>;
-    dataDir: Schema<string, string>;
-    errorRateAlert: Schema<number, number>;
-}>, Schemastery.ObjectT<{
-    enabled: Schema<boolean, boolean>;
-    dataDir: Schema<string, string>;
-    errorRateAlert: Schema<number, number>;
-}>>;
+export declare const Config: Schema<Schemastery.ObjectS<NoInfer<{
+    enabled: Schema<boolean, boolean, "defined">;
+    dataDir: Schema<string, string, "plain">;
+    errorRateAlert: Schema<number, number, "defined">;
+}>>, Schemastery.ObjectT<NoInfer<{
+    enabled: Schema<boolean, boolean, "defined">;
+    dataDir: Schema<string, string, "plain">;
+    errorRateAlert: Schema<number, number, "defined">;
+}>>, "plain">;
 export declare function expandHome(path: string): string;
 export declare function readTrace(dataDir: string): {
     records: TraceLineLike[];
